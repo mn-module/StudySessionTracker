@@ -67,7 +67,7 @@ class StudySession:
 
     def __str__(self) -> str:
         """Return a user-friendly string representation of the object."""
-        return (f"StudySession for '{self.subject_name}' with the total time of "
+        return (f"StudySession for {self.subject_name!r} with the total time of "
                 f"{StudySession.format_time(self.total_time)} and current state: {self.state}.")
 
     # Properties:
