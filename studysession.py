@@ -13,21 +13,10 @@ class StudySession:
         - total_time: Total time for the subject in seconds. (int)
         - start_time: Timestamp when the study session started. (datetime.datetime or None)
         - stop_time: Timestamp when the study session stopped. (datetime.datetime or None)
-        - pause_resume_times: Tuple of tuples containing pause and resume timestamps. Each inner tuple represents
-          a pair of pause and resume times. If the session was paused but not resumed before stopping, the resume part
-          of the tuple will be `None`. (Tuple[Tuple[datetime.datetime, datetime.datetime or None]])
-        - state: Current state of the study session [e.g "RUNNING"/"PAUSED"/"INACTIVE"/"STOPPED"]. (str)
-
-    Methods:
-        - start_tracking(): Start tracking the study session duration.
-        - stop_tracking(): Stop tracking the study session duration.
-        - pause_tracking(): Pause tracking the study session duration.
-        - resume_tracking(): Resume tracking the study session from a previously paused state.
-        - discard_tracking(): Discard tracking the study session.
-        - reset_tracking(): Reset tracking the study session data to its initial state.
-        - get_duration(): Retrieve duration of the study session excluding the cumulative pause duration.
-        - get_cumulative_pause_duration(): Calculate the cumulative pause duration during the study session.
-        - format_time(time_seconds: int): Static method to format time in seconds to 'hr:mm:sec' format.
+        - pause_resume_times: A tuple containing multiple tuples, where each inner tuple represents a pair of pause
+          and resume timestamps. If the session was paused but not resumed before stopping, the resume part of the tuple
+          will be `None`. (Tuple[Tuple[datetime.datetime, datetime.datetime or None]])
+        - state: Current state of the study session. (str)
 
     Internal Attributes:
         - _subject_name: Internal storage for the subject name. (str)
@@ -36,13 +25,33 @@ class StudySession:
                        (datetime.datetime or None)
         - _stop_time: Internal storage for the timestamp when the study session stopped, None if not stopped.
                       (datetime.datetime or None)
-        - _pause_resume_times: Internal storage for the list of tuples containing pause and resume timestamps.
-                               (List[Tuple[datetime.datetime, datetime.datetime or None]])
+        - _pause_resume_times: Internal storage for a list containing multiple tuples, where each inner tuple represents
+          a pair of pause and resume timestamps. (List[Tuple[datetime.datetime, datetime.datetime or None]])
         - _state: Internal storage for the current state of the session. (str)
 
-    Internal Methods:
-        - _determine_stop_time(): Determine the time the session was stopped.
-        - _update_total_time(): Update the total time with session duration.
+    Instance Methods:
+        - start_tracking(self): Start tracking the study session duration.
+        - stop_tracking(self): Stop tracking the study session duration.
+        - pause_tracking(self): Pause tracking the study session duration.
+        - resume_tracking(self): Resume tracking the study session from a previously paused state.
+        - discard_tracking(self): Discard tracking the study session.
+        - reset_tracking(self): Reset tracking the study session data to its initial state.
+        - get_duration(self): Retrieve the duration of the study session excluding the cumulative pause duration.
+        - get_cumulative_pause_duration(self): Calculate the cumulative pause duration during the study session.
+
+    Internal Instance Methods:
+        - _determine_stop_time(self): Determine the time the session was stopped.
+        - _update_total_time(self): Calculate the session duration and add the result to the total time for the subject.
+
+    Static Method:
+        - format_time(time_seconds: int): Format time in seconds to 'hr:mm:sec' format.
+
+    Session States (Additional Note):
+        - "RUNNING": The session is currently active and tracking time.
+        - "PAUSED": The session has been temporarily paused and is not tracking time.
+        - "INACTIVE": The session has not been started yet or has been discarded without tracking any time.
+        - "STOPPED": The session has been stopped, and the time has been recorded. It needs to be reset before
+          starting again.
     """
 
     def __init__(self, subject_name: str, total_time: int = 0):
@@ -109,14 +118,7 @@ class StudySession:
 
     @property
     def pause_resume_times(self) -> Tuple:
-        """
-        Retrieve all the pause and resume times as pairs.
-
-        Note:
-            This property returns the internal list of pause and resume times as a tuple of tuples.
-            Each inner tuple represents a pair of pause and resume times. If the session was paused but
-            not resumed before stopping, the resume part of the tuple will be `None`.
-        """
+        """Retrieve all the pause and resume times as pairs."""
         return tuple(self._pause_resume_times)
 
     @property
@@ -125,6 +127,7 @@ class StudySession:
         return self._state
 
     # Core session interaction methods:
+    # Instance Methods:
     def start_tracking(self) -> None:
         """Start tracking the study session duration."""
         if self.state == "RUNNING":
@@ -177,7 +180,7 @@ class StudySession:
         self._state = "INACTIVE"
 
     def get_duration(self) -> int:
-        """Retrieve duration of the study session excluding the cumulative pause duration."""
+        """Retrieve the duration of the study session excluding the cumulative pause duration."""
         if self.state == "STOPPED":
             duration = (self.stop_time - self.start_time).total_seconds()
         elif self.state == "RUNNING":
@@ -198,6 +201,7 @@ class StudySession:
                 cumulative_pause_duration = cumulative_pause_duration + ((resume - pause).total_seconds())
         return int(cumulative_pause_duration)
 
+    # Internal Instance Methods:
     def _determine_stop_time(self) -> None:
         """Determine the time the session was stopped."""
         if self.state == "RUNNING":
@@ -206,12 +210,13 @@ class StudySession:
             self._stop_time = self._pause_resume_times[-1][0]  # Set end time to the last pause point
 
     def _update_total_time(self) -> None:
-        """Update the total time with session duration."""
+        """Calculate the session duration and add the result to the total time for the subject."""
         self.total_time = self.total_time + self.get_duration()
 
+    # Static Method:
     @staticmethod
     def format_time(time_seconds: int) -> str:
-        """Static method to format time in seconds to 'hr:mm:sec' format."""
+        """Format time in seconds to 'hr:mm:sec' format."""
         hrs, remainder = divmod(time_seconds, 3600)
         mins, secs = divmod(remainder, 60)
         return f"{hrs:02}:{mins:02}:{secs:02}"
