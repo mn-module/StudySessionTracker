@@ -42,7 +42,8 @@ class StudySession:
         - pause_tracking(self) -> None: Pause tracking the study-session duration.
         - resume_tracking(self) -> None: Resume tracking the study-session from a previously paused state.
         - discard_tracking(self) -> None: Discard tracking the study-session.
-        - reset_tracking(self) -> None: Reset tracking the study-session data to its initial state.
+        - reset_tracking(self) -> None: Reset tracking the study-session data to its initial state,
+          excluding the 'total_time'.
         - get_duration(self) -> int: Retrieve the duration of the study-session excluding the cumulative pause duration.
         - get_cumulative_pause_duration(self) -> int: Calculate the cumulative pause duration during the study-session.
 
@@ -166,7 +167,7 @@ class StudySession:
         self._state = "INACTIVE"
 
     def reset_tracking(self) -> None:
-        """Reset tracking the study-session data to its initial state."""
+        """Reset tracking the study-session data to its initial state, excluding the 'total_time'."""
         if self.state != "STOPPED":
             raise StudySessionError("Cannot reset a study-session that hasn't been stopped.")
         self._start_time = None
