@@ -29,8 +29,9 @@ class TotalTimeDBHandler:
         self._db_folder_path = db_folder_path
         self._db_file_name = db_file_name
         self._conn = None
-        self.init_db()
         self.auto_explicit_commit_flag = auto_explicit_commit_flag
+        # setting up the database connection
+        self.init_db()
 
     def __repr__(self) -> str:
         """Return a representative string."""
@@ -111,7 +112,8 @@ class TotalTimeDBHandler:
 
     def reset_conn(self):
         """Reset the database connection. Can be used to re-open a closed database connection."""
-        self._conn.close()  # Explicitly closing existing database connection to prevent db file from getting locked
+        # Explicitly closing existing database connection to prevent the database file from getting locked
+        self._conn.close()
         self._conn = sqlite3.connect(self.get_db_path())
 
     def close_conn(self):
