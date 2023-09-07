@@ -1,6 +1,4 @@
 import datetime
-
-
 from typing import Tuple
 
 
@@ -55,7 +53,7 @@ class StudySession:
     Static Method:
         - format_time(time_seconds: int) -> str: Format time in seconds to 'hr:mm:sec' format.
     """
-
+    # Initialization and representation methods:
     def __init__(self, subject_name: str, subject_total_time: int = 0):
         """Initialize a StudySession object."""
         self.subject_name = subject_name
