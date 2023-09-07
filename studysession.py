@@ -40,7 +40,6 @@ class StudySession:
         - discard_tracking(self) -> None: Discard tracking the study-session.
         - reset_tracking(self) -> None: Reset tracking the study-session data to its initial state,
           excluding the 'total_time'.
-        - get_duration(self) -> int: Retrieve the duration of the study-session.
         - get_active_duration(self) -> int: Retrieve the active duration of the study-session(excluding the
           cumulative pause duration).
         - get_cumulative_pause_duration(self) -> int: Calculate the cumulative pause duration during the study-session.
@@ -154,8 +153,8 @@ class StudySession:
         self._pause_resume_times.clear()
         self._state = "INACTIVE"
 
-    def get_duration(self) -> int:
-        """Retrieve the duration of the study-session."""
+    def get_active_duration(self) -> int:
+        """Retrieve the active duration of the study-session(excluding the cumulative pause duration)."""
         if self.state == "STOPPED":
             duration = (self.stop_time - self.start_time).total_seconds()
         elif self.state == "RUNNING":
@@ -164,11 +163,7 @@ class StudySession:
             duration = (self._pause_resume_times[-1][0] - self.start_time).total_seconds()
         else:
             raise StudySessionError("Study-session hasn't started yet.")
-        return int(duration)
-
-    def get_active_duration(self) -> int:
-        """Retrieve the active duration of the study-session(excluding the cumulative pause duration)."""
-        return self.get_duration() - self.get_cumulative_pause_duration()
+        return int(duration - self.get_cumulative_pause_duration())
 
     def get_cumulative_pause_duration(self) -> int:
         """Calculate the cumulative pause duration during the study-session."""
