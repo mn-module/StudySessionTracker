@@ -8,7 +8,6 @@ class StudySession:
 
     Properties:
         - subject_name: Name of the subject for the study-session. (str)
-        - subject_total_time: Total time (in seconds) already spent on the subject. (int)
         - start_time: Timestamp when the study-session started. (datetime.datetime or None)
         - stop_time: Timestamp when the study-session stopped. (datetime.datetime or None)
         - pause_resume_times: A tuple containing multiple tuples, where each inner tuple represents a pair of pause
@@ -25,7 +24,6 @@ class StudySession:
 
     Internal Attributes:
         - _subject_name: Internal storage for the subject name. (str)
-        - _subject_total_time: Internal storage for the subject total time. (int)
         - _start_time: Internal storage for the timestamp when the study-session started, None if not started.
                        (datetime.datetime or None)
         - _stop_time: Internal storage for the timestamp when the study-session stopped, None if not stopped.
@@ -47,17 +45,14 @@ class StudySession:
 
     Internal Instance Methods:
         - _determine_stop_time(self) -> None: Determine the time the study-session was stopped.
-        - _update_subject_total_time(self) -> None: Calculate the study-session duration and add the result to the
-          subject total time.
 
     Static Method:
         - format_time(time_seconds: int) -> str: Format time in seconds to 'hr:mm:sec' format.
     """
     # Initialization and representation methods:
-    def __init__(self, subject_name: str, subject_total_time: int = 0):
+    def __init__(self, subject_name: str):
         """Initialize a StudySession object."""
         self.subject_name = subject_name
-        self.subject_total_time = subject_total_time
         # Internal attributes
         self._start_time = None
         self._stop_time = None
@@ -66,12 +61,11 @@ class StudySession:
 
     def __repr__(self) -> str:
         """Return a developer-friendly representation of the object."""
-        return f"StudySession(subject_name={self.subject_name!r}, subject_total_time={self.subject_total_time})"
+        return f"StudySession(subject_name={self.subject_name!r})"
 
     def __str__(self) -> str:
         """Return a user-friendly string representation of the object."""
-        return (f"StudySession for {self.subject_name!r} with the subject total time of "
-                f"{StudySession.format_time(self.subject_total_time)} and current state: {self.state}.")
+        return f"StudySession for {self.subject_name!r} and current state: {self.state}."
 
     # Properties:
     @property
@@ -85,20 +79,6 @@ class StudySession:
         if not isinstance(name, str):
             raise ValueError("Subject name must be a string.")
         self._subject_name = name
-
-    @property
-    def subject_total_time(self) -> int:
-        """Property to get the subject total time."""
-        return self._subject_total_time
-
-    @subject_total_time.setter
-    def subject_total_time(self, val: int):
-        """Setter for the subject total time."""
-        if not isinstance(val, int):
-            raise ValueError("Subject total time must be an integer.")
-        if val < 0:
-            raise ValueError("Subject total time cannot be negative.")
-        self._subject_total_time = val
 
     @property
     def start_time(self) -> datetime.datetime:
@@ -139,7 +119,6 @@ class StudySession:
             raise StudySessionError("Cannot stop a study-session that isn't currently running or paused.")
         self._determine_stop_time()
         self._state = "STOPPED"
-        self._update_subject_total_time()
 
     def pause_tracking(self):
         """Pause tracking the study-session duration."""
@@ -202,10 +181,6 @@ class StudySession:
             self._stop_time = datetime.datetime.now()
         elif self.state == "PAUSED":
             self._stop_time = self._pause_resume_times[-1][0]  # Set end time to the last pause point
-
-    def _update_subject_total_time(self) -> None:
-        """Calculate the study-session duration and add the result to the subject total time."""
-        self.subject_total_time = self.subject_total_time + self.get_duration()
 
     # Static Method:
     @staticmethod
