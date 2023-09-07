@@ -1,8 +1,6 @@
 import os
 import sqlite3
-
 from collections.abc import Iterator
-
 from typing import List, Tuple, Iterable
 
 
