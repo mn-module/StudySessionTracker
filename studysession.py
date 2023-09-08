@@ -40,12 +40,10 @@ class StudySession:
         - discard_tracking(self) -> None: Discard tracking the study-session.
         - reset_tracking(self) -> None: Reset tracking the study-session data to its initial state,
           excluding the 'total_time'.
+        - get_duration(self) -> int: Retrieve the duration of the study-session.
         - get_active_duration(self) -> int: Retrieve the active duration of the study-session(excluding the
           cumulative pause duration).
         - get_cumulative_pause_duration(self) -> int: Calculate the cumulative pause duration during the study-session.
-
-    Internal Instance Methods:
-        - _determine_stop_time(self) -> None: Determine the time the study-session was stopped.
 
     Static Method:
         - format_time(time_seconds: int) -> str: Format time in seconds to 'hr:mm:sec' format.
@@ -66,7 +64,7 @@ class StudySession:
 
     def __str__(self) -> str:
         """Return a user-friendly string representation of the object."""
-        return f"StudySession for {self.subject_name!r} and current state: {self.state}."
+        return f"StudySession for {self.subject_name!r} and current state: '{self.state}'."
 
     # Properties:
     @property
@@ -118,7 +116,7 @@ class StudySession:
         """Stop tracking the study-session duration."""
         if self.state != "RUNNING" and self.state != "PAUSED":
             raise StudySessionError("Cannot stop a study-session that isn't currently running or paused.")
-        self._determine_stop_time()
+        self._stop_time = datetime.datetime.now()
         self._state = "STOPPED"
 
     def pause_tracking(self):
@@ -153,17 +151,19 @@ class StudySession:
         self._pause_resume_times.clear()
         self._state = "INACTIVE"
 
-    def get_active_duration(self) -> int:
-        """Retrieve the active duration of the study-session(excluding the cumulative pause duration)."""
+    def get_duration(self) -> int:
+        """Retrieve the duration of the study-session."""
         if self.state == "STOPPED":
             duration = (self.stop_time - self.start_time).total_seconds()
-        elif self.state == "RUNNING":
+        elif self.state == "RUNNING" or self.state == "PAUSED":
             duration = (datetime.datetime.now() - self.start_time).total_seconds()
-        elif self.state == "PAUSED":
-            duration = (self._pause_resume_times[-1][0] - self.start_time).total_seconds()
         else:
             raise StudySessionError("Study-session hasn't started yet.")
-        return int(duration - self.get_cumulative_pause_duration())
+        return int(duration)
+
+    def get_active_duration(self) -> int:
+        """Retrieve the active duration of the study-session(excluding the cumulative pause duration)."""
+        return self.get_duration() - self.get_cumulative_pause_duration()
 
     def get_cumulative_pause_duration(self) -> int:
         """Calculate the cumulative pause duration during the study-session."""
@@ -171,17 +171,13 @@ class StudySession:
             raise StudySessionError("Attempting to calculate the total pause duration for an inactive study-session.")
         cumulative_pause_duration = 0
         for pause, resume in self._pause_resume_times:
-            if resume:
-                cumulative_pause_duration = cumulative_pause_duration + ((resume - pause).total_seconds())
+            if resume is None:
+                if self.state == "PAUSED":
+                    resume = datetime.datetime.now()
+                elif self.state == "STOPPED":
+                    resume = self.stop_time
+            cumulative_pause_duration = cumulative_pause_duration + ((resume - pause).total_seconds())
         return int(cumulative_pause_duration)
-
-    # Internal Instance Methods:
-    def _determine_stop_time(self) -> None:
-        """Determine the time the study-session was stopped."""
-        if self.state == "RUNNING":
-            self._stop_time = datetime.datetime.now()
-        elif self.state == "PAUSED":
-            self._stop_time = self._pause_resume_times[-1][0]  # Set end time to the last pause point
 
     # Static Method:
     @staticmethod
