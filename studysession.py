@@ -123,10 +123,13 @@ class StudySession:
         if self.state != "RUNNING" and self.state != "PAUSED":
             raise StudySessionError("Cannot stop a study-session that isn't currently running or paused.")
 
+        previous_state = self.state
         self._stop_time = datetime.datetime.now()
         self._state = "STOPPED"
-
-        self._cached_cumulative_pause_duration = self._cached_cumulative_pause_duration + self.get_pause_duration(-1)
+        # Only need to update the cached cumulative pause duration if the study-session stopped from PAUSED state
+        if previous_state == "PAUSED":
+            self._cached_cumulative_pause_duration = (self._cached_cumulative_pause_duration +
+                                                      self.get_pause_duration(-1))
 
     def pause_tracking(self):
         """Pause tracking the study-session duration."""
