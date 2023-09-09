@@ -92,7 +92,7 @@ class TotalTimeDBHandler:
         cur.execute("""
         CREATE TABLE IF NOT EXISTS records (
             subject_name TEXT PRIMARY KEY,
-            subject_total_time INTEGER NOT NULL
+            subject_total_time REAL NOT NULL
         )
         """)
         self.commit_conn()
@@ -150,14 +150,14 @@ class TotalTimeDBHandler:
         self.close_conn()
 
     # Core database interaction methods:
-    def add_record(self, subject_name: str, total_time: int = 0) -> None:
+    def add_record(self, subject_name: str, total_time: float = 0) -> None:
         """Add a single new record to the database."""
         cur = self._conn.cursor()
         cur.execute("INSERT INTO records (subject_name, subject_total_time) VALUES (?, ?)",
                     (subject_name, total_time))
         self._auto_explicit_commit_fn()
 
-    def add_records(self, subjects_data: Iterable[Tuple[str, int]]) -> None:
+    def add_records(self, subjects_data: Iterable[Tuple[str, float]]) -> None:
         """Add multiple new records to the database."""
         cur = self._conn.cursor()
         cur.executemany("INSERT INTO records (subject_name, subject_total_time) VALUES (?, ?)", subjects_data)
@@ -170,13 +170,13 @@ class TotalTimeDBHandler:
                     (new_subject_name, old_subject_name))
         self._auto_explicit_commit_fn()
 
-    def set_record_total_time(self, subject_name: str, total_time: int) -> None:
+    def set_record_total_time(self, subject_name: str, total_time: float) -> None:
         """Set the total time of a record in the database."""
         cur = self._conn.cursor()
         cur.execute("UPDATE records SET subject_total_time = ? WHERE subject_name = ?", (total_time, subject_name))
         self._auto_explicit_commit_fn()
 
-    def increment_record_total_time(self, subject_name: str, increment_value: int) -> None:
+    def increment_record_total_time(self, subject_name: str, increment_value: float) -> None:
         """Increment the total time of a record in the database by a given value."""
         cur = self._conn.cursor()
         cur.execute(
@@ -191,13 +191,13 @@ class TotalTimeDBHandler:
         cur.execute("SELECT subject_name FROM records WHERE subject_name = ?", (subject_name,))
         return cur.fetchone() is not None
 
-    def get_record(self, subject_name: str) -> Tuple[str, int]:
+    def get_record(self, subject_name: str) -> Tuple[str, float]:
         """Retrieve the record from the database."""
         cur = self._conn.cursor()
         cur.execute("SELECT subject_name, subject_total_time FROM records WHERE subject_name = ?", (subject_name,))
         return cur.fetchone()
 
-    def get_records(self, subject_names: Iterable[str]) -> List[Tuple[str, int]]:
+    def get_records(self, subject_names: Iterable[str]) -> List[Tuple[str, float]]:
         """Retrieve the records from the database."""
         cur = self._conn.cursor()
         # If subject_names is an iterator, convert it to a tuple
@@ -207,7 +207,7 @@ class TotalTimeDBHandler:
                     f" WHERE subject_name IN ({','.join('?' for _ in subject_names)})", subject_names)
         return cur.fetchall()
 
-    def get_all_records(self) -> List[Tuple[str, int]]:
+    def get_all_records(self) -> List[Tuple[str, float]]:
         """Retrieve all records from the database."""
         cur = self._conn.cursor()
         cur.execute("SELECT subject_name, subject_total_time FROM records")
