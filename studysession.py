@@ -176,10 +176,10 @@ class StudySession:
             raise StudySessionError("Attempting to calculate the duration of an inactive study-session.")
 
         if self.state == "STOPPED":
-            duration = (self.stop_time - self.start_time).total_seconds()
+            duration = self.stop_time - self.start_time
         else:   # RUNNING or PAUSED
-            duration = (datetime.datetime.now() - self.start_time).total_seconds()
-        return duration
+            duration = datetime.datetime.now() - self.start_time
+        return duration.total_seconds()
 
     def get_active_duration(self) -> float:
         """Retrieve the active duration of the study-session(excluding the cumulative pause duration)."""
