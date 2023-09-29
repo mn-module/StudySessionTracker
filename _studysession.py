@@ -7,7 +7,7 @@ from totaltimedbhandler import TotalTimeDBHandler
 
 class StudySession(ParentStudySession):
     """
-    This class is just a demo of how you can use the `StudySession` class with `TotalTimeDBHandler`
+    This class is just a demo of how you can use the 'StudySession' class with 'TotalTimeDBHandler'
     to persist the data. The real reason I wrote it like this because I didn't want to
     create a GUI app or CLI app. That's too boring, and honestly, those apps won't be easy
     to use on my iPad Pro. But this current style? This is how I use it on my iPad Pro to
