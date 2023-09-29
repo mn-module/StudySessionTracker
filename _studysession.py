@@ -59,7 +59,7 @@ class StudySession(ParentStudySession):
                        f"{self.stop_time.strftime('%A %I:%M:%S %p')},"
                        f"{fmt_study_session_duration},"
                        f"{fmt_study_session_cumulative_pause_duration},"
-                       f"{fmt_study_session_active_duration}")
+                       f"{fmt_study_session_active_duration}\n")
 
     def delete_from_db(self, db_handler: TotalTimeDBHandler) -> None:
         """
