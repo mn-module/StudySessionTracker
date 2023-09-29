@@ -12,7 +12,7 @@ class StudySession:
         - stop_time: Timestamp when the study-session stopped. (datetime.datetime or None)
         - pause_resume_times: A tuple containing multiple tuples, where each inner tuple represents a pair of pause
           and resume timestamps. If the study-session was paused but not resumed before stopping, the resume part of
-          the tuple will be `None`. (Tuple[Tuple[datetime.datetime, datetime.datetime or None]])
+          the tuple will be 'None'. (Tuple[Tuple[datetime.datetime, datetime.datetime or None]])
         - state: Current state of the study-session. (str)
           Valid states and their meanings are:
               - "RUNNING": The study-session is currently active and tracking time.
