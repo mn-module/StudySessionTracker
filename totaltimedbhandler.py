@@ -141,8 +141,7 @@ class TotalTimeDBHandler:
         """
         if exc_type is None:
             self.commit_conn()
-        else:
-            # exception occurred
+        else:  # exception occurred
             if self.auto_explicit_commit_flag:
                 self.commit_conn()
             else:
