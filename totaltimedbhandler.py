@@ -26,6 +26,14 @@ class TotalTimeDBHandler:
           set_record_total_time, increment_record_total_time, remove_record, remove_records, and
           clear_all. By default, it is set to True.
         """
+        # validation for db_folder_path and db_file_name
+        if not isinstance(db_folder_path, str):
+            raise TypeError(f"Excepted Type: 'str' for 'db_folder_path'"
+                            f", but got {type(db_folder_path).__name__!r} instead!")
+        if not isinstance(db_file_name, str):
+            raise TypeError(f"Excepted Type: 'str' for 'db_file_name'"
+                            f", but got {type(db_file_name).__name__!r} instead!")
+
         self._db_folder_path = db_folder_path
         self._db_file_name = db_file_name
         self._conn = None
@@ -33,12 +41,12 @@ class TotalTimeDBHandler:
         # setting up the database connection
         self.init_db()
 
-    def __repr__(self) -> str:
+    def __repr__(self):
         """Return a representative string."""
         return (f"TotalTimeDBHandler(db_folder_path={self.db_folder_path!r}, "
                 f"db_file_name={self.db_file_name!r}, auto_commit_flag={self.auto_explicit_commit_flag!r})")
 
-    def __str__(self) -> str:
+    def __str__(self):
         """Return a readable string representation."""
         return f"Total-Time Database Handler: {self.get_db_path()}"
 
@@ -62,7 +70,7 @@ class TotalTimeDBHandler:
     def auto_explicit_commit_flag(self, val: bool) -> None:
         """Set the flag status for auto explicit commit."""
         if not isinstance(val, bool):
-            raise TypeError(f"Expected a boolean value for auto_commit, but got {type(val).__name__}.")
+            raise TypeError(f"Expected Type: 'bool' for 'auto_commit', but got {type(val).__name__!r} instead!")
         self._auto_explicit_commit_flag = val
 
     # Database setup and configuration:
@@ -97,7 +105,7 @@ class TotalTimeDBHandler:
         """)
         self.commit_conn()
 
-    def _auto_explicit_commit_fn(self):
+    def _auto_explicit_commit_fn(self) -> None:
         """Automatically commit if the flag is set."""
         if self.auto_explicit_commit_flag:
             self.commit_conn()
@@ -106,17 +114,17 @@ class TotalTimeDBHandler:
         """Commit the current transaction."""
         self._conn.commit()
 
-    def rollback_conn(self):
+    def rollback_conn(self) -> None:
         """Rollback any changes made since the last commit."""
         self._conn.rollback()
 
-    def reset_conn(self):
+    def reset_conn(self) -> None:
         """Reset the database connection. Can be used to re-open a closed database connection."""
         # Explicitly closing existing database connection to prevent the database file from getting locked
         self._conn.close()
         self._conn = sqlite3.connect(self.get_db_path())
 
-    def close_conn(self):
+    def close_conn(self) -> None:
         """Close the database connection."""
         self._conn.close()
 
