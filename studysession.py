@@ -63,13 +63,13 @@ class StudySession:
         self._cached_cumulative_pause_duration = 0
         self._state = "INACTIVE"
 
-    def __repr__(self) -> str:
+    def __repr__(self):
         """Return a developer-friendly representation of the object."""
         return f"StudySession(subject_name={self.subject_name!r})"
 
-    def __str__(self) -> str:
+    def __str__(self):
         """Return a user-friendly string representation of the object."""
-        return f"StudySession for {self.subject_name!r} and current state: '{self.state}'."
+        return f"StudySession for {self.subject_name!r} and current state: {self.state!r}."
 
     # Properties:
     @property
@@ -81,7 +81,7 @@ class StudySession:
     def subject_name(self, name: str) -> None:
         """Setter for the subject name."""
         if not isinstance(name, str):
-            raise ValueError("Subject name must be a string.")
+            raise ValueError("'subject_name' must be a string!")
         self._subject_name = name
 
     @property
@@ -109,11 +109,11 @@ class StudySession:
     def start_tracking(self) -> None:
         """Start tracking the study-session duration."""
         if self.state == "RUNNING":
-            raise StudySessionError("Study-session is already running.")
+            raise StudySessionError("Study-session is already running!")
         elif self.state == "STOPPED":
-            raise StudySessionError("Study-session hasn't been reset.")
+            raise StudySessionError("Study-session hasn't been reset!")
         elif self.state == "PAUSED":
-            raise StudySessionError("Cannot start a study-session that is currently paused.")
+            raise StudySessionError("Cannot start a study-session that is currently paused!")
 
         self._start_time = datetime.datetime.now()
         self._state = "RUNNING"
@@ -121,7 +121,7 @@ class StudySession:
     def stop_tracking(self) -> None:
         """Stop tracking the study-session duration."""
         if self.state != "RUNNING" and self.state != "PAUSED":
-            raise StudySessionError("Cannot stop a study-session that isn't currently running or paused.")
+            raise StudySessionError("Cannot stop a study-session that isn't currently running or paused!")
 
         previous_state = self.state
         self._stop_time = datetime.datetime.now()
@@ -134,7 +134,7 @@ class StudySession:
     def pause_tracking(self):
         """Pause tracking the study-session duration."""
         if self.state != "RUNNING":
-            raise StudySessionError("Cannot pause a study-session that isn't currently running.")
+            raise StudySessionError("Cannot pause a study-session that isn't currently running!")
 
         self._pause_resume_times.append((datetime.datetime.now(), None))
         self._state = "PAUSED"
@@ -142,7 +142,7 @@ class StudySession:
     def resume_tracking(self):
         """Resume tracking the study-session from a previously paused state."""
         if self.state != "PAUSED":
-            raise StudySessionError("Cannot resume a study-session that isn't currently paused.")
+            raise StudySessionError("Cannot resume a study-session that isn't currently paused!")
 
         last_pause, _ = self._pause_resume_times[-1]
         self._pause_resume_times[-1] = (last_pause, datetime.datetime.now())
@@ -152,7 +152,7 @@ class StudySession:
     def discard_tracking(self) -> None:
         """Discard tracking the study-session."""
         if self.state != "RUNNING" and self.state != "PAUSED":
-            raise StudySessionError("Cannot discard a study-session that isn't currently running or paused.")
+            raise StudySessionError("Cannot discard a study-session that isn't currently running or paused!")
 
         self._start_time = None
         self._pause_resume_times.clear()
@@ -162,7 +162,7 @@ class StudySession:
     def reset_tracking(self) -> None:
         """Reset tracking the study-session data to its initial state, excluding the 'total_time'."""
         if self.state != "STOPPED":
-            raise StudySessionError("Cannot reset a study-session that hasn't been stopped.")
+            raise StudySessionError("Cannot reset a study-session that hasn't been stopped!")
 
         self._start_time = None
         self._stop_time = None
@@ -173,7 +173,7 @@ class StudySession:
     def get_duration(self) -> float:
         """Retrieve the duration of the study-session."""
         if self.state == "INACTIVE":
-            raise StudySessionError("Attempting to calculate the duration of an inactive study-session.")
+            raise StudySessionError("Attempting to calculate the duration of an inactive study-session!")
 
         if self.state == "STOPPED":
             duration = self.stop_time - self.start_time
@@ -188,7 +188,7 @@ class StudySession:
     def get_pause_duration(self, idx: int) -> float:
         """Calculate the pause duration for a specific pause-resume pair of the study-session."""
         if self.state == "INACTIVE":
-            raise StudySessionError("Attempting to calculate the pause duration of an inactive study-session.")
+            raise StudySessionError("Attempting to calculate the pause duration of an inactive study-session!")
 
         pause, resume = self._pause_resume_times[idx]
         if resume is None:
@@ -202,7 +202,7 @@ class StudySession:
         """Calculate the cumulative pause duration of the study-session."""
         if self.state == "INACTIVE":
             raise StudySessionError("Attempting to calculate the cumulative pause duration "
-                                    "of an inactive study-session.")
+                                    "of an inactive study-session!")
 
         if self.state == "PAUSED":
             cumulative_pause_duration = self._cached_cumulative_pause_duration + self.get_pause_duration(-1)
