@@ -70,7 +70,8 @@ class TotalTimeDBHandler:
     def auto_explicit_commit_flag(self, val: bool) -> None:
         """Set the flag status for auto explicit commit."""
         if not isinstance(val, bool):
-            raise TypeError(f"Expected Type: 'bool' for 'auto_commit', but got {type(val).__name__!r} instead!")
+            raise TypeError(f"Expected Type: 'bool' for 'auto_explicit_commit_flag'"
+                            f", but got {type(val).__name__!r} instead!")
         self._auto_explicit_commit_flag = val
 
     # Database setup and configuration:
