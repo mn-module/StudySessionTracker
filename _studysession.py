@@ -20,7 +20,7 @@ class StudySession(ParentStudySession):
         """
         # Check study-session state before saving
         if self.state != "STOPPED":
-            raise StudySessionError("Study-session must be stopped before saving data to the database.")
+            raise StudySessionError("Study-session must be stopped before saving data to the database!")
 
         if db_handler.is_record_present(self.subject_name):  # Record already exists, update the record
             db_handler.increment_record_total_time(self.subject_name, self.get_active_duration())
@@ -36,7 +36,7 @@ class StudySession(ParentStudySession):
         # based on study-session start time
         # Check study-session state before saving
         if self.state != "STOPPED":
-            raise StudySessionError("Study-session must be stopped before saving data to the csv file.")
+            raise StudySessionError("Study-session must be stopped before saving data to the csv file!")
 
         # Check and create the csv folder path if it doesn't exist
         if not os.path.exists(csv_folder_path):
@@ -74,5 +74,5 @@ class StudySession(ParentStudySession):
 
 class StudySessionNotFoundError(Exception):
     """Raised when the requested study-session is not found in the database."""
-    def __init__(self, subject_name):
-        Exception.__init__(self, f"Study-session with subject name '{subject_name}' not found in the database.")
+    def __init__(self, subject_name: str):
+        Exception.__init__(self, f"Study-session with subject name: {subject_name!r} not found in the database.")
