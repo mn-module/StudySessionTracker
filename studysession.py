@@ -81,7 +81,7 @@ class StudySession:
     def subject_name(self, name: str) -> None:
         """Setter for the subject name."""
         if not isinstance(name, str):
-            raise ValueError("'subject_name' must be a string!")
+            raise TypeError(f"Excepted Type: 'str' for 'subject_name', but got {type(name).__name__!r} instead!")
         self._subject_name = name
 
     @property
