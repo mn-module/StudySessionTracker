@@ -242,4 +242,5 @@ class TotalTimeDBHandler:
 
     def __del__(self):
         """Destructor to close the database connection."""
-        self._conn.close()
+        if hasattr(self, '_conn'):
+            self._conn.close()
