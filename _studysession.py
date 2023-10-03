@@ -79,4 +79,4 @@ class _StudySession(ParentStudySession):
 class StudySessionNotFoundError(Exception):
     """Raised when the requested study-session is not found in the database."""
     def __init__(self, subject_name: str):
-        Exception.__init__(self, f"Study-session with subject name: {subject_name!r} not found in the database.")
+        Exception.__init__(self, f"Study-session with subject name: {subject_name!r} not found in the database!")
