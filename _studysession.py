@@ -5,14 +5,17 @@ from studysession import StudySessionError
 from totaltimedbhandler import TotalTimeDBHandler
 
 
-class StudySession(ParentStudySession):
+class _StudySession(ParentStudySession):
     """
-    This class is just a demo of how you can use the 'StudySession' class with 'TotalTimeDBHandler'
+    This private class is just a demo of how you can use the 'StudySession' class with 'TotalTimeDBHandler'
     to persist the data. The real reason I wrote it like this because I didn't want to
     create a GUI app or CLI app. That's too boring, and honestly, those apps won't be easy
     to use on my iPad Pro. But this current style? This is how I use it on my iPad Pro to
     track my study progress. So easy and simple! Give it a try! ;)
     """
+    def __repr__(self):
+        return f"_{ParentStudySession.__repr__(self)}"
+
     def save_to_db(self, db_handler: TotalTimeDBHandler) -> None:
         """
         If the study-session subject name has a corresponding record in the database, the total time associated
@@ -51,9 +54,10 @@ class StudySession(ParentStudySession):
                            "active duration\n")
         # Writing Data to csv
         with open(csv_path, "a") as file:
-            fmt_study_session_duration = StudySession.format_time(self.get_duration())
-            fmt_study_session_cumulative_pause_duration = StudySession.format_time(self.get_cumulative_pause_duration())
-            fmt_study_session_active_duration = StudySession.format_time(self.get_active_duration())
+            fmt_study_session_duration = _StudySession.format_time(self.get_duration())
+            fmt_study_session_cumulative_pause_duration = _StudySession.format_time(
+                self.get_cumulative_pause_duration())
+            fmt_study_session_active_duration = _StudySession.format_time(self.get_active_duration())
             file.write(f"{self.subject_name},"
                        f"{self.start_time.strftime('%A %I:%M:%S %p')},"
                        f"{self.stop_time.strftime('%A %I:%M:%S %p')},"
