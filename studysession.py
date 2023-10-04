@@ -69,7 +69,7 @@ class StudySession:
 
     def __str__(self):
         """Return a user-friendly string representation of the object."""
-        return f"{self.state.capitalize()} study-session for subject: {self.subject_name!r}."
+        return f"{self.state.capitalize()} study-session for subject: {self.subject_name!r}"
 
     # Properties:
     @property
