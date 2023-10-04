@@ -79,9 +79,8 @@ class TotalTimeDBHandler:
                             f", but got {type(flag).__name__!r} instead!")
         self._auto_explicit_commit_flag = flag
 
-    # Instance Methods:
+    # Instance Methods (Public):
     # Database setup and configuration
-
     def init_db(self) -> None:
         """
         Set up the database by ensuring the required table exists.
@@ -205,7 +204,7 @@ class TotalTimeDBHandler:
         cur.execute("DELETE FROM records")
         self._auto_explicit_commit_fn()
 
-    # Internal Instance Methods:
+    # Instance Methods (Internal):
     def _ensure_db_folder_exists(self) -> None:
         """Ensure that the database folder exists."""
         if not os.path.exists(self.db_folder_path):
