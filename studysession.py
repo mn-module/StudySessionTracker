@@ -71,7 +71,7 @@ class StudySession:
         """Return a user-friendly string representation of the object."""
         return f"{self.state.capitalize()} study-session for subject: {self.subject_name!r}"
 
-    # Properties:
+    # Properties (Getters and Setters):
     @property
     def subject_name(self) -> str:
         """Return the subject name."""
