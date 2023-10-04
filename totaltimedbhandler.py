@@ -11,7 +11,7 @@ class TotalTimeDBHandler:
     Manages CRUD operations on a SQLite database where each subject's name is used as a primary key
     to track its total study duration. Supports optional explicit transaction commits after key operations.
     """
-    # Initialization and representation methods:
+    # Initialization and Representation Methods:
     def __init__(self, db_folder_path: str, db_file_name: str, *, auto_explicit_commit_flag=True):
         """
         Initialize the database handler with the provided folder path and file name.
