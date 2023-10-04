@@ -34,7 +34,7 @@ class StudySession:
           pause-resume cycle. (float)
         - _state: Internal storage for the current state of the study-session. (str)
 
-    Instance Methods:
+    Instance Methods (Public):
         - start_tracking(self) -> None: Start tracking the study-session duration.
         - stop_tracking(self) -> None: Stop tracking the study-session duration.
         - pause_tracking(self) -> None: Pause tracking the study-session duration.
@@ -49,7 +49,7 @@ class StudySession:
           of the study-session.
         - get_cumulative_pause_duration(self) -> float: Calculate the cumulative pause duration of the study-session.
 
-    Static Method:
+    Static Methods (Public):
         - format_time(time_seconds: float) -> str: Format time in seconds to 'hr:mm:sec.fraction' format.
     """
     # Initialization and Representation Methods:
@@ -104,8 +104,8 @@ class StudySession:
         """Return the current state of the study-session."""
         return self._state
 
-    # Core study-session interaction methods:
-    # Instance Methods:
+    # Instance Methods (Public):
+    # Core study-session interaction methods
     def start_tracking(self) -> None:
         """Start tracking the study-session duration."""
         if self.state == "RUNNING":
@@ -210,7 +210,7 @@ class StudySession:
             cumulative_pause_duration = self._cached_cumulative_pause_duration
         return cumulative_pause_duration
 
-    # Static Method:
+    # Static Methods (Public):
     @staticmethod
     def format_time(time_seconds: float) -> str:
         """Format time in seconds to 'hr:mm:sec.fraction' format."""
