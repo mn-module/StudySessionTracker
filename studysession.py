@@ -69,7 +69,7 @@ class StudySession:
 
     def __str__(self):
         """Return a user-friendly string representation of the object."""
-        return f"StudySession for {self.subject_name!r} and current state: {self.state!r}."
+        return f"{self.state.capitalize()} study-session for subject {self.subject_name!r}."
 
     # Properties:
     @property
@@ -100,7 +100,7 @@ class StudySession:
         return tuple(self._pause_resume_times)
 
     @property
-    def state(self):
+    def state(self) -> str:
         """Return the current state of the study-session."""
         return self._state
 
@@ -131,7 +131,7 @@ class StudySession:
             self._cached_cumulative_pause_duration = (self._cached_cumulative_pause_duration +
                                                       self.get_pause_duration(-1))
 
-    def pause_tracking(self):
+    def pause_tracking(self) -> None:
         """Pause tracking the study-session duration."""
         if self.state != "RUNNING":
             raise StudySessionError("Cannot pause a study-session that isn't currently running!")
@@ -139,7 +139,7 @@ class StudySession:
         self._pause_resume_times.append((datetime.datetime.now(), None))
         self._state = "PAUSED"
 
-    def resume_tracking(self):
+    def resume_tracking(self) -> None:
         """Resume tracking the study-session from a previously paused state."""
         if self.state != "PAUSED":
             raise StudySessionError("Cannot resume a study-session that isn't currently paused!")
