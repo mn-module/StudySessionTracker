@@ -48,7 +48,7 @@ class TotalTimeDBHandler:
 
     def __str__(self):
         """Return a readable string representation."""
-        return f"Total-Time Database Handler: {self.get_db_path()}"
+        return f"Total-Time Database Handler: {self.full_db_path}"
 
     # Properties (Getters and Setters):
     @property
@@ -60,6 +60,11 @@ class TotalTimeDBHandler:
     def db_file_name(self) -> str:
         """Get the database file name."""
         return self._db_file_name
+
+    @property
+    def full_db_path(self) -> str:
+        """Get the full database path."""
+        return os.path.join(self.db_folder_path, self.db_file_name)
 
     @property
     def auto_explicit_commit_flag(self) -> bool:
@@ -76,9 +81,6 @@ class TotalTimeDBHandler:
 
     # Instance Methods:
     # Database setup and configuration
-    def get_db_path(self) -> str:
-        """Get the full database path."""
-        return os.path.join(self.db_folder_path, self.db_file_name)
 
     def init_db(self) -> None:
         """
@@ -92,7 +94,7 @@ class TotalTimeDBHandler:
         if self._conn is not None:  # Checking it is initial run or not. because _conn is set to None in initial run
             self.close_conn()
         self._ensure_db_folder_exists()
-        self._conn = sqlite3.connect(self.get_db_path())
+        self._conn = sqlite3.connect(self.full_db_path)
         cur = self._conn.cursor()
         cur.execute("""
         CREATE TABLE IF NOT EXISTS records (
@@ -114,7 +116,7 @@ class TotalTimeDBHandler:
         """Reset the database connection. Can be used to re-open a closed database connection."""
         # Explicitly closing existing database connection to prevent the database file from getting locked
         self._conn.close()
-        self._conn = sqlite3.connect(self.get_db_path())
+        self._conn = sqlite3.connect(self.full_db_path)
 
     def close_conn(self) -> None:
         """Close the database connection."""
