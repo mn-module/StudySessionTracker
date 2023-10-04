@@ -52,7 +52,7 @@ class StudySession:
     Static Method:
         - format_time(time_seconds: float) -> str: Format time in seconds to 'hr:mm:sec.fraction' format.
     """
-    # Initialization and representation methods:
+    # Initialization and Representation Methods:
     def __init__(self, subject_name: str):
         """Initialize a StudySession object."""
         self.subject_name = subject_name
