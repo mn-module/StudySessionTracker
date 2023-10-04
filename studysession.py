@@ -81,7 +81,7 @@ class StudySession:
     def subject_name(self, name: str) -> None:
         """Setter for the subject name."""
         if not isinstance(name, str):
-            raise TypeError(f"Excepted Type: 'str' for 'subject_name', but got {type(name).__name__!r} instead!")
+            raise TypeError(f"Excepted Type: 'str' for subject_name, but got {type(name).__name__!r} instead!")
         self._subject_name = name
 
     @property
@@ -109,9 +109,9 @@ class StudySession:
     def start_tracking(self) -> None:
         """Start tracking the study-session duration."""
         if self.state == "RUNNING":
-            raise StudySessionError("Study-session is already running!")
+            raise StudySessionError("This study-session is already running!")
         elif self.state == "STOPPED":
-            raise StudySessionError("Study-session hasn't been reset!")
+            raise StudySessionError("This study-session hasn't been reset!")
         elif self.state == "PAUSED":
             raise StudySessionError("Cannot start a study-session that is currently paused!")
 
