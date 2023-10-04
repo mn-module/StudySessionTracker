@@ -26,7 +26,7 @@ class TotalTimeDBHandler:
           set_record_total_time, increment_record_total_time, remove_record, remove_records, and
           clear_all. By default, it is set to True.
         """
-        # validation for db_folder_path and db_file_name
+        # Validation for db_folder_path and db_file_name
         if not isinstance(db_folder_path, str):
             raise TypeError(f"Excepted Type: 'str' for db_folder_path"
                             f", but got {type(db_folder_path).__name__!r} instead!")
@@ -38,7 +38,7 @@ class TotalTimeDBHandler:
         self._db_file_name = db_file_name
         self._conn = None
         self.auto_explicit_commit_flag = auto_explicit_commit_flag
-        # setting up the database connection
+        # Setting up the database connection
         self.init_db()
 
     def __repr__(self):
@@ -50,7 +50,7 @@ class TotalTimeDBHandler:
         """Return a readable string representation."""
         return f"Total-Time Database Handler: {self.get_db_path()}"
 
-    # Properties:
+    # Properties (Getters and Setters):
     @property
     def db_folder_path(self) -> str:
         """Get the database folder path."""
@@ -67,19 +67,15 @@ class TotalTimeDBHandler:
         return self._auto_explicit_commit_flag
 
     @auto_explicit_commit_flag.setter
-    def auto_explicit_commit_flag(self, val: bool) -> None:
+    def auto_explicit_commit_flag(self, flag: bool) -> None:
         """Set the flag status for auto explicit commit."""
-        if not isinstance(val, bool):
+        if not isinstance(flag, bool):
             raise TypeError(f"Expected Type: 'bool' for auto_explicit_commit_flag"
-                            f", but got {type(val).__name__!r} instead!")
-        self._auto_explicit_commit_flag = val
+                            f", but got {type(flag).__name__!r} instead!")
+        self._auto_explicit_commit_flag = flag
 
-    # Database setup and configuration:
-    def _ensure_db_folder_exists(self) -> None:
-        """Ensure that the database folder exists."""
-        if not os.path.exists(self.db_folder_path):
-            os.makedirs(self.db_folder_path)
-
+    # Instance Methods:
+    # Database setup and configuration
     def get_db_path(self) -> str:
         """Get the full database path."""
         return os.path.join(self.db_folder_path, self.db_file_name)
@@ -106,11 +102,6 @@ class TotalTimeDBHandler:
         """)
         self.commit_conn()
 
-    def _auto_explicit_commit_fn(self) -> None:
-        """Automatically commit if the flag is set."""
-        if self.auto_explicit_commit_flag:
-            self.commit_conn()
-
     def commit_conn(self) -> None:
         """Commit the current transaction."""
         self._conn.commit()
@@ -129,35 +120,7 @@ class TotalTimeDBHandler:
         """Close the database connection."""
         self._conn.close()
 
-    # Context manager methods:
-    def __enter__(self):
-        """Support for with statement entry."""
-        return self
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        """
-        Handle the database connection cleanup on exiting a 'with' block.
-
-        The behavior is as follows:
-        - If no exceptions occurred within the 'with' block, commit any pending changes to the database.
-        - If an exception did occur:
-            - If 'auto_explicit_commit_flag' is set to True, commit the changes to ensure data persistence even in
-              the face of errors. This means that operations like 'add_records' will be saved even if an error
-              occurs partway through a series of operations.
-            - If 'auto_explicit_commit_flag' is set to False, rollback any changes made within the 'with' block
-              to revert the database to its state before entering the block.
-        - Finally, close the database connection.
-        """
-        if exc_type is None:
-            self.commit_conn()
-        else:   # exception occurred
-            if self.auto_explicit_commit_flag:
-                self.commit_conn()
-            else:
-                self.rollback_conn()
-        self.close_conn()
-
-    # Core database interaction methods:
+    # Core database interaction methods
     def add_record(self, subject_name: str, total_time: float = 0) -> None:
         """Add a single new record to the database."""
         cur = self._conn.cursor()
@@ -239,6 +202,46 @@ class TotalTimeDBHandler:
         cur = self._conn.cursor()
         cur.execute("DELETE FROM records")
         self._auto_explicit_commit_fn()
+
+    # Private Instance Methods:
+    def _ensure_db_folder_exists(self) -> None:
+        """Ensure that the database folder exists."""
+        if not os.path.exists(self.db_folder_path):
+            os.makedirs(self.db_folder_path)
+
+    def _auto_explicit_commit_fn(self) -> None:
+        """Automatically commit if the flag is set."""
+        if self.auto_explicit_commit_flag:
+            self.commit_conn()
+
+    # Magic Methods:
+    # Context manager methods
+    def __enter__(self):
+        """Support for with statement entry."""
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        """
+        Handle the database connection cleanup on exiting a 'with' block.
+
+        The behavior is as follows:
+        - If no exceptions occurred within the 'with' block, commit any pending changes to the database.
+        - If an exception did occur:
+            - If 'auto_explicit_commit_flag' is set to True, commit the changes to ensure data persistence even in
+              the face of errors. This means that operations like 'add_records' will be saved even if an error
+              occurs partway through a series of operations.
+            - If 'auto_explicit_commit_flag' is set to False, rollback any changes made within the 'with' block
+              to revert the database to its state before entering the block.
+        - Finally, close the database connection.
+        """
+        if exc_type is None:
+            self.commit_conn()
+        else:   # Exception occurred
+            if self.auto_explicit_commit_flag:
+                self.commit_conn()
+            else:
+                self.rollback_conn()
+        self.close_conn()
 
     def __del__(self):
         """Destructor to close the database connection."""
