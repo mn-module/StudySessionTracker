@@ -205,7 +205,7 @@ class TotalTimeDBHandler:
         cur.execute("DELETE FROM records")
         self._auto_explicit_commit_fn()
 
-    # Private Instance Methods:
+    # Internal Instance Methods:
     def _ensure_db_folder_exists(self) -> None:
         """Ensure that the database folder exists."""
         if not os.path.exists(self.db_folder_path):
