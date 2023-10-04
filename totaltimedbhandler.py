@@ -28,10 +28,10 @@ class TotalTimeDBHandler:
         """
         # validation for db_folder_path and db_file_name
         if not isinstance(db_folder_path, str):
-            raise TypeError(f"Excepted Type: 'str' for 'db_folder_path'"
+            raise TypeError(f"Excepted Type: 'str' for db_folder_path"
                             f", but got {type(db_folder_path).__name__!r} instead!")
         if not isinstance(db_file_name, str):
-            raise TypeError(f"Excepted Type: 'str' for 'db_file_name'"
+            raise TypeError(f"Excepted Type: 'str' for db_file_name"
                             f", but got {type(db_file_name).__name__!r} instead!")
 
         self._db_folder_path = db_folder_path
@@ -70,7 +70,7 @@ class TotalTimeDBHandler:
     def auto_explicit_commit_flag(self, val: bool) -> None:
         """Set the flag status for auto explicit commit."""
         if not isinstance(val, bool):
-            raise TypeError(f"Expected Type: 'bool' for 'auto_explicit_commit_flag'"
+            raise TypeError(f"Expected Type: 'bool' for auto_explicit_commit_flag"
                             f", but got {type(val).__name__!r} instead!")
         self._auto_explicit_commit_flag = val
 
