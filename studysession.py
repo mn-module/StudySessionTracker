@@ -59,7 +59,7 @@ class StudySession:
         Initialize a StudySession object.
 
         Parameters:
-            - subject_name: Name of the subject for the study-session.
+            - subject_name: Name of the subject for the study-session. (str)
         """
         self.subject_name = subject_name
         # Internal attributes
