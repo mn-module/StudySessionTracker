@@ -13,6 +13,7 @@ class _StudySession(ParentStudySession):
     to use on my iPad Pro. But this current style? This is how I use it on my iPad Pro to
     track my study progress. So easy and simple! Give it a try! ;)
     """
+
     def __repr__(self):
         return f"_{ParentStudySession.__repr__(self)}"
 
@@ -23,8 +24,7 @@ class _StudySession(ParentStudySession):
         """
         # Check study-session state before saving
         if self.state != "STOPPED":
-            raise StudySessionError("This study-session must be stopped before saving data to the database!")
-
+            raise StudySessionError("this study-session must be stopped before saving data to the database!")
         if db_handler.is_record_present(self.subject_name):  # Record already exists, update the record
             db_handler.increment_record_total_time(self.subject_name, self.get_active_duration())
         else:   # Record doesn't already exist, create a new record
@@ -39,12 +39,10 @@ class _StudySession(ParentStudySession):
         # based on study-session start time
         # Check study-session state before saving
         if self.state != "STOPPED":
-            raise StudySessionError("This study-session must be stopped before saving data to the csv file!")
-
+            raise StudySessionError("this study-session must be stopped before saving data to the csv file!")
         # Check and create the csv folder path if it doesn't exist
         if not os.path.exists(csv_folder_path):
             os.makedirs(csv_folder_path)
-
         # Generate csv path based on study-session start time
         csv_path = os.path.join(csv_folder_path, f"{self.start_time.strftime('%Y-%m')}.csv")
         # Create a new csv file and write header if csv file is missing or is empty
@@ -79,4 +77,4 @@ class _StudySession(ParentStudySession):
 class StudySessionNotFoundError(Exception):
     """Raised when the requested study-session is not found in the database."""
     def __init__(self, subject_name: str):
-        Exception.__init__(self, f"Study-session with subject name: {subject_name!r} not found in the database!")
+        Exception.__init__(self, f"study-session with subject name: {subject_name!r} not found in the database!")
