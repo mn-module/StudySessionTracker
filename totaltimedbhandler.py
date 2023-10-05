@@ -11,7 +11,9 @@ class TotalTimeDBHandler:
     Manages CRUD operations on a SQLite database where each subject's name is used as a primary key
     to track its total study duration. Supports optional explicit transaction commits after key operations.
     """
+    
     # Initialization and Representation Methods:
+
     def __init__(self, db_folder_path: str, db_file_name: str, *, auto_explicit_commit_flag=True):
         """
         Initialize the database handler with the provided folder path and file name.
@@ -28,12 +30,11 @@ class TotalTimeDBHandler:
         """
         # Validation for db_folder_path and db_file_name
         if not isinstance(db_folder_path, str):
-            raise TypeError(f"Excepted Type: 'str' for db_folder_path"
+            raise TypeError(f"excepted Type: 'str' for db_folder_path"
                             f", but got {type(db_folder_path).__name__!r} instead!")
         if not isinstance(db_file_name, str):
-            raise TypeError(f"Excepted Type: 'str' for db_file_name"
+            raise TypeError(f"excepted Type: 'str' for db_file_name"
                             f", but got {type(db_file_name).__name__!r} instead!")
-
         self._db_folder_path = db_folder_path
         self._db_file_name = db_file_name
         self._conn = None
@@ -51,6 +52,7 @@ class TotalTimeDBHandler:
         return f"Total-Time Database Handler: {self.full_db_path}"
 
     # Properties (Getters and Setters):
+
     @property
     def db_folder_path(self) -> str:
         """Get the database folder path."""
@@ -75,12 +77,13 @@ class TotalTimeDBHandler:
     def auto_explicit_commit_flag(self, flag: bool) -> None:
         """Set the flag status for auto explicit commit."""
         if not isinstance(flag, bool):
-            raise TypeError(f"Expected Type: 'bool' for auto_explicit_commit_flag"
+            raise TypeError(f"expected Type: 'bool' for auto_explicit_commit_flag"
                             f", but got {type(flag).__name__!r} instead!")
         self._auto_explicit_commit_flag = flag
 
     # Instance Methods (Public):
     # Database setup and configuration
+
     def init_db(self) -> None:
         """
         Set up the database by ensuring the required table exists.
@@ -122,6 +125,7 @@ class TotalTimeDBHandler:
         self._conn.close()
 
     # Core database interaction methods
+
     def add_record(self, subject_name: str, total_time: float = 0) -> None:
         """Add a single new record to the database."""
         cur = self._conn.cursor()
@@ -205,6 +209,7 @@ class TotalTimeDBHandler:
         self._auto_explicit_commit_fn()
 
     # Instance Methods (Internal):
+
     def _ensure_db_folder_exists(self) -> None:
         """Ensure that the database folder exists."""
         if not os.path.exists(self.db_folder_path):
@@ -217,6 +222,7 @@ class TotalTimeDBHandler:
 
     # Magic Methods:
     # Context manager methods
+
     def __enter__(self):
         """Support for with statement entry."""
         return self
