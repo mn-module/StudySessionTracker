@@ -11,7 +11,7 @@ class TotalTimeDBHandler:
     Manages CRUD operations on a SQLite database where each subject's name is used as a primary key
     to track its total study duration. Supports optional explicit transaction commits after key operations.
     """
-    
+
     # Initialization and Representation Methods:
 
     def __init__(self, db_folder_path: str, db_file_name: str, *, auto_explicit_commit_flag=True):
@@ -19,14 +19,14 @@ class TotalTimeDBHandler:
         Initialize the database handler with the provided folder path and file name.
 
         Parameters:
-        - db_folder_path (str): The path to the folder where the database file will be stored.
-        - db_file_name (str): The name of the database file.
-        - auto_explicit_commit_flag (bool, optional): If set to True, certain instance methods will
-          explicitly commit transactions after executing their database operations. This behavior
-          applies only to the instance methods and not the underlying SQLite3 connection. The
-          affected methods are: add_record, add_records, change_record_subject_name,
-          set_record_total_time, increment_record_total_time, remove_record, remove_records, and
-          clear_all. By default, it is set to True.
+            - db_folder_path (str): The path to the folder where the database file will be stored.
+            - db_file_name (str): The name of the database file.
+            - auto_explicit_commit_flag (bool, optional): If set to True, certain instance methods will
+              explicitly commit transactions after executing their database operations. This behavior
+              applies only to the instance methods and not the underlying SQLite3 connection. The
+              affected methods are: add_record, add_records, change_record_subject_name,
+              set_record_total_time, increment_record_total_time, remove_record, remove_records, and
+              clear_all. By default, it is set to True.
         """
         # Validation for db_folder_path and db_file_name
         if not isinstance(db_folder_path, str):
@@ -232,14 +232,14 @@ class TotalTimeDBHandler:
         Handle the database connection cleanup on exiting a 'with' block.
 
         The behavior is as follows:
-        - If no exceptions occurred within the 'with' block, commit any pending changes to the database.
-        - If an exception did occur:
-            - If 'auto_explicit_commit_flag' is set to True, commit the changes to ensure data persistence even in
-              the face of errors. This means that operations like 'add_records' will be saved even if an error
-              occurs partway through a series of operations.
-            - If 'auto_explicit_commit_flag' is set to False, rollback any changes made within the 'with' block
-              to revert the database to its state before entering the block.
-        - Finally, close the database connection.
+            - If no exceptions occurred within the 'with' block, commit any pending changes to the database.
+            - If an exception did occur:
+                - If 'auto_explicit_commit_flag' is set to True, commit the changes to ensure data persistence even in
+                  the face of errors. This means that operations like 'add_records' will be saved even if an error
+                  occurs partway through a series of operations.
+                - If 'auto_explicit_commit_flag' is set to False, rollback any changes made within the 'with' block
+                  to revert the database to its state before entering the block.
+            - Finally, close the database connection.
         """
         if exc_type is None:
             self.commit_conn()
