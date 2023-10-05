@@ -55,7 +55,12 @@ class StudySession:
     # Initialization and Representation Methods:
 
     def __init__(self, subject_name: str):
-        """Initialize a StudySession object."""
+        """
+        Initialize a StudySession object.
+
+        Parameters:
+            - subject_name: Name of the subject for the study-session.
+        """
         self.subject_name = subject_name
         # Internal attributes
         self._start_time = None
@@ -73,7 +78,7 @@ class StudySession:
         return f"{self.state.capitalize()} study-session for subject: {self.subject_name!r}"
 
     # Properties (Getters and Setters):
-    
+
     @property
     def subject_name(self) -> str:
         """Return the subject name."""
