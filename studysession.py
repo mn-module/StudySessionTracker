@@ -3,64 +3,12 @@ from typing import Tuple
 
 
 class StudySession:
-    """
-    Represents and manages a study-session for a specific subject.
-
-    Properties:
-        - subject_name: Name of the subject for the study-session. (str)
-        - start_time: Timestamp when the study-session started. (datetime.datetime or None)
-        - stop_time: Timestamp when the study-session stopped. (datetime.datetime or None)
-        - pause_resume_times: A tuple containing multiple tuples, where each inner tuple represents a pair of pause
-          and resume timestamps. If the study-session was paused but not resumed before stopping, the resume part of
-          the tuple will be 'None'. (Tuple[Tuple[datetime.datetime, datetime.datetime or None]])
-        - state: Current state of the study-session. (str)
-          Valid states and their meanings are:
-              - "RUNNING": The study-session is currently active and tracking time.
-              - "PAUSED": The study-session has been temporarily paused and is not tracking time.
-              - "INACTIVE": The study-session has not been started yet.
-              - "STOPPED": The study-session has been stopped, and the time has been recorded. It needs to be reset
-                before starting again.
-
-    Internal Attributes:
-        - _subject_name: Internal storage for the subject name. (str)
-        - _start_time: Internal storage for the timestamp when the study-session started, None if not started.
-          (datetime.datetime or None)
-        - _stop_time: Internal storage for the timestamp when the study-session stopped, None if not stopped.
-          (datetime.datetime or None)
-        - _pause_resume_times: Internal storage for a list containing multiple tuples, where each inner tuple represents
-          a pair of pause and resume timestamps. (List[Tuple[datetime.datetime, datetime.datetime or None]])
-        - _cached_cumulative_pause_duration: Internal storage for cached cumulative pause duration up to the most recent
-          pause-resume cycle. (float)
-        - _state: Internal storage for the current state of the study-session. (str)
-
-    Instance Methods (Public):
-        - start_tracking(self) -> None: Start tracking the study-session duration.
-        - stop_tracking(self) -> None: Stop tracking the study-session duration.
-        - pause_tracking(self) -> None: Pause tracking the study-session duration.
-        - resume_tracking(self) -> None: Resume tracking the study-session from a previously paused state.
-        - discard_tracking(self) -> None: Discard tracking the study-session.
-        - reset_tracking(self) -> None: Reset tracking the study-session data to its initial state,
-          excluding the 'total_time'.
-        - get_duration(self) -> float: Retrieve the duration of the study-session.
-        - get_active_duration(self) -> float: Retrieve the active duration of the study-session(excluding the
-          cumulative pause duration).
-        - get_pause_duration(self, idx: int) -> float: Calculate the pause duration for a specific pause-resume pair
-          of the study-session.
-        - get_cumulative_pause_duration(self) -> float: Calculate the cumulative pause duration of the study-session.
-
-    Static Methods (Public):
-        - format_time(time_seconds: float) -> str: Format time in seconds to 'hr:mm:sec.fraction' format.
-    """
+    """Represents and manages a study-session for a specific subject."""
 
     # Initialization and Representation Methods:
 
     def __init__(self, subject_name: str):
-        """
-        Initialize a StudySession object.
-
-        Parameters:
-            - subject_name: Name of the subject for the study-session. (str)
-        """
+        """Initialize a StudySession instance."""
         self.subject_name = subject_name
         # Internal attributes
         self._start_time = None
@@ -70,11 +18,11 @@ class StudySession:
         self._state = "INACTIVE"
 
     def __repr__(self):
-        """Return a developer-friendly representation of the object."""
+        """Return a developer-friendly representation."""
         return f"StudySession(subject_name={self.subject_name!r})"
 
     def __str__(self):
-        """Return a user-friendly string representation of the object."""
+        """Return a user-friendly string representation."""
         return f"{self.state.capitalize()} study-session for subject: {self.subject_name!r}"
 
     # Properties (Getters and Setters):
