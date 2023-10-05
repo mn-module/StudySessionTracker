@@ -15,19 +15,7 @@ class TotalTimeDBHandler:
     # Initialization and Representation Methods:
 
     def __init__(self, db_folder_path: str, db_file_name: str, *, auto_explicit_commit_flag=True):
-        """
-        Initialize the database handler with the provided folder path and file name.
-
-        Parameters:
-            - db_folder_path (str): The path to the folder where the database file will be stored.
-            - db_file_name (str): The name of the database file.
-            - auto_explicit_commit_flag (bool, optional): If set to True, certain instance methods will
-              explicitly commit transactions after executing their database operations. This behavior
-              applies only to the instance methods and not the underlying SQLite3 connection. The
-              affected methods are: add_record, add_records, change_record_subject_name,
-              set_record_total_time, increment_record_total_time, remove_record, remove_records, and
-              clear_all. By default, it is set to True.
-        """
+        """Initialize the database handler with the provided folder path and file name."""
         # Validation for db_folder_path and db_file_name
         if not isinstance(db_folder_path, str):
             raise TypeError(f"excepted Type: 'str' for db_folder_path"
@@ -43,12 +31,12 @@ class TotalTimeDBHandler:
         self.init_db()
 
     def __repr__(self):
-        """Return a representative string."""
+        """Return a developer-friendly representation."""
         return (f"TotalTimeDBHandler(db_folder_path={self.db_folder_path!r}, "
                 f"db_file_name={self.db_file_name!r}, auto_commit_flag={self.auto_explicit_commit_flag!r})")
 
     def __str__(self):
-        """Return a readable string representation."""
+        """Return a user-friendly string representation."""
         return f"Total-Time Database Handler: {self.full_db_path}"
 
     # Properties (Getters and Setters):
@@ -228,19 +216,7 @@ class TotalTimeDBHandler:
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        """
-        Handle the database connection cleanup on exiting a 'with' block.
-
-        The behavior is as follows:
-            - If no exceptions occurred within the 'with' block, commit any pending changes to the database.
-            - If an exception did occur:
-                - If 'auto_explicit_commit_flag' is set to True, commit the changes to ensure data persistence even in
-                  the face of errors. This means that operations like 'add_records' will be saved even if an error
-                  occurs partway through a series of operations.
-                - If 'auto_explicit_commit_flag' is set to False, rollback any changes made within the 'with' block
-                  to revert the database to its state before entering the block.
-            - Finally, close the database connection.
-        """
+        """Handle the database connection cleanup on exiting a 'with' block."""
         if exc_type is None:
             self.commit_conn()
         else:   # Exception occurred
