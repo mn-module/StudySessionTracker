@@ -14,6 +14,13 @@ class _StudySession(ParentStudySession):
     track my study progress. So easy and simple! Give it a try! ;)
     """
 
+    @ParentStudySession.subject_name.setter
+    def subject_name(self, name: str) -> None:
+        if "," in name:    # the comma is forbidden here
+            raise InvalidSubjectNameError()
+        # Calls the parent's setter
+        ParentStudySession.subject_name.__set__(self, name)
+
     def __repr__(self):
         return f"_{ParentStudySession.__repr__(self)}"
 
@@ -37,6 +44,7 @@ class _StudySession(ParentStudySession):
          """
         # Note: this method only allows csv folder path because the file name is dynamically generated
         # based on study-session start time
+
         # Check study-session state before saving
         if self.state != "STOPPED":
             raise StudySessionError("this study-session must be stopped before saving data to the csv file!")
@@ -78,3 +86,9 @@ class StudySessionNotFoundError(Exception):
     """Raised when the requested study-session is not found in the database."""
     def __init__(self, subject_name: str):
         Exception.__init__(self, f"study-session with subject name: {subject_name!r} not found in the database!")
+
+
+class InvalidSubjectNameError(Exception):
+    """Exception raised for the subject name with comma."""
+    def __init__(self, message: str = "the comma is forbidden here because of csv logging functionality!"):
+        Exception.__init__(self, message)
