@@ -16,10 +16,12 @@ class _StudySession(ParentStudySession):
 
     @ParentStudySession.subject_name.setter
     def subject_name(self, name: str) -> None:
+        if not isinstance(name, str):
+            raise TypeError(f"excepted Type: 'str' for subject_name, but got {type(name).__name__!r} instead!")
         if "," in name:    # the comma is forbidden here
-            raise InvalidSubjectNameError()
-        # Calls the parent's setter
-        ParentStudySession.subject_name.__set__(self, name)
+            raise ValueError("found comma in the subject_name, "
+                             "note: the comma is forbidden here because of csv logging functionality!")
+        self._subject_name = name
 
     def __repr__(self):
         return f"_{ParentStudySession.__repr__(self)}"
@@ -86,9 +88,3 @@ class StudySessionNotFoundError(Exception):
     """Raised when the requested study-session is not found in the database."""
     def __init__(self, subject_name: str):
         Exception.__init__(self, f"study-session with subject name: {subject_name!r} not found in the database!")
-
-
-class InvalidSubjectNameError(Exception):
-    """Exception raised for the subject name with comma."""
-    def __init__(self, message: str = "the comma is forbidden here because of csv logging functionality!"):
-        Exception.__init__(self, message)
