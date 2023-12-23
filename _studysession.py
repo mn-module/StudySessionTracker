@@ -1,7 +1,7 @@
 import os
 
 from studysession import StudySession as ParentStudySession
-from studysession import StudySessionError
+from studysession import StudySessionError, StudySessionNotFoundError
 from totaltimedbhandler import TotalTimeDBHandler
 
 
@@ -88,9 +88,3 @@ class _StudySession(ParentStudySession):
             db_handler.delete_record(self.subject_name)
         else:
             raise StudySessionNotFoundError(self.subject_name)
-
-
-class StudySessionNotFoundError(Exception):
-    """Raised when the requested study-session is not found in the database."""
-    def __init__(self, subject_name: str):
-        Exception.__init__(self, f"study-session with subject name: {subject_name!r} not found in the database!")
