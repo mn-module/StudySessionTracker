@@ -10,14 +10,14 @@ class StudySession:
 
     def __init__(self, subject_name: str, timezone: pytz.timezone = pytz.timezone("UTC")):
         """Initialize a StudySession instance."""
-        self.subject_name = subject_name
         # Internal attributes
         self._start_time = None
         self._stop_time = None
         self._pause_resume_times = []
         self._cached_cumulative_pause_duration = 0
         self._state = "INACTIVE"
-        # Setting timezone
+        # Subject name and timezone
+        self.subject_name = subject_name
         self.timezone = timezone
 
     def __repr__(self):
