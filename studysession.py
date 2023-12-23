@@ -1,4 +1,5 @@
 import datetime
+import pytz
 from typing import Tuple
 
 
@@ -7,7 +8,7 @@ class StudySession:
 
     # Initialization and Representation Methods:
 
-    def __init__(self, subject_name: str):
+    def __init__(self, subject_name: str, timezone: pytz.timezone = pytz.timezone("UTC")):
         """Initialize a StudySession instance."""
         self.subject_name = subject_name
         # Internal attributes
@@ -16,28 +17,50 @@ class StudySession:
         self._pause_resume_times = []
         self._cached_cumulative_pause_duration = 0
         self._state = "INACTIVE"
+        # Setting timezone
+        self.timezone = timezone
 
     def __repr__(self):
         """Return a developer-friendly representation."""
-        return f"StudySession(subject_name={self.subject_name!r})"
+        return f"StudySession(subject_name={self.subject_name!r}, timezone=pytz.timezone({self.timezone.zone!r}))"
 
     def __str__(self):
         """Return a user-friendly string representation."""
-        return f"{self.state.capitalize()} study-session for subject: {self.subject_name!r}"
+        return (f"{self.state.capitalize()} study-session for subject: {self.subject_name!r}"
+                f" with {self.timezone.zone!r} timezone.")
 
     # Properties (Getters and Setters):
 
     @property
     def subject_name(self) -> str:
-        """Return the subject name."""
+        """Return the subject_name."""
         return self._subject_name
 
     @subject_name.setter
     def subject_name(self, name: str) -> None:
-        """Setter for the subject name."""
+        """Setter for the subject_name attribute."""
         if not isinstance(name, str):
-            raise TypeError(f"excepted Type: 'str' for subject_name, but got {type(name).__name__!r} instead!")
+            raise TypeError(f"excepted type: 'str', got {type(name).__name__!r} instead!")
+
         self._subject_name = name
+
+    @property
+    def timezone(self) -> pytz.timezone:
+        """Return the current timezone object."""
+        return self._timezone
+
+    @timezone.setter
+    def timezone(self, tz_obj: pytz.timezone) -> None:
+        """Setter for timezone attribute."""
+        if not isinstance(tz_obj, pytz.BaseTzInfo):
+            raise TypeError(f"excepted type: 'pytz.timezone'"
+                            f", got {type(tz_obj).__name__!r} instead!")
+
+        if self.state != "INACTIVE":
+            raise StudySessionError(f"cannot set timezone for a study-session that is currently {self.state!r}, "
+                                    "note: timezone can only be set when the study-session is in 'INACTIVE' state!")
+
+        self._timezone = tz_obj
 
     @property
     def start_time(self) -> datetime.datetime:
@@ -66,19 +89,21 @@ class StudySession:
         """Start tracking the study-session duration."""
         if self.state == "RUNNING":
             raise StudySessionError("this study-session is already running!")
-        elif self.state == "STOPPED":
+        if self.state == "STOPPED":
             raise StudySessionError("this study-session hasn't been reset!")
-        elif self.state == "PAUSED":
+        if self.state == "PAUSED":
             raise StudySessionError("cannot start a study-session that is currently paused!")
-        self._start_time = datetime.datetime.now()
+
+        self._start_time = datetime.datetime.now(self.timezone)
         self._state = "RUNNING"
 
     def stop_tracking(self) -> None:
         """Stop tracking the study-session duration."""
         if self.state != "RUNNING" and self.state != "PAUSED":
             raise StudySessionError("cannot stop a study-session that isn't currently running or paused!")
+
         previous_state = self.state
-        self._stop_time = datetime.datetime.now()
+        self._stop_time = datetime.datetime.now(self.timezone)
         self._state = "STOPPED"
         # Only need to update the cached cumulative pause duration if the study-session stopped from PAUSED state
         if previous_state == "PAUSED":
@@ -89,15 +114,17 @@ class StudySession:
         """Pause tracking the study-session duration."""
         if self.state != "RUNNING":
             raise StudySessionError("cannot pause a study-session that isn't currently running!")
-        self._pause_resume_times.append((datetime.datetime.now(), None))
+
+        self._pause_resume_times.append((datetime.datetime.now(self.timezone), None))
         self._state = "PAUSED"
 
     def resume_tracking(self) -> None:
         """Resume tracking the study-session from a previously paused state."""
         if self.state != "PAUSED":
             raise StudySessionError("cannot resume a study-session that isn't currently paused!")
+
         last_pause, _ = self._pause_resume_times[-1]
-        self._pause_resume_times[-1] = (last_pause, datetime.datetime.now())
+        self._pause_resume_times[-1] = (last_pause, datetime.datetime.now(self.timezone))
         self._cached_cumulative_pause_duration = self._cached_cumulative_pause_duration + self.get_pause_duration(-1)
         self._state = "RUNNING"
 
@@ -105,6 +132,7 @@ class StudySession:
         """Discard tracking the study-session."""
         if self.state != "RUNNING" and self.state != "PAUSED":
             raise StudySessionError("cannot discard a study-session that isn't currently running or paused!")
+
         self._start_time = None
         self._pause_resume_times.clear()
         self._cached_cumulative_pause_duration = 0
@@ -114,6 +142,7 @@ class StudySession:
         """Reset tracking the study-session data to its initial state, excluding the 'total_time'."""
         if self.state != "STOPPED":
             raise StudySessionError("cannot reset a study-session that hasn't been stopped!")
+
         self._start_time = None
         self._stop_time = None
         self._pause_resume_times.clear()
@@ -126,10 +155,11 @@ class StudySession:
         """Retrieve the duration of the study-session."""
         if self.state == "INACTIVE":
             raise StudySessionError("attempting to calculate the duration of an inactive study-session!")
+
         if self.state == "STOPPED":
             duration = self.stop_time - self.start_time
         else:   # RUNNING or PAUSED
-            duration = datetime.datetime.now() - self.start_time
+            duration = datetime.datetime.now(self.timezone) - self.start_time
         return duration.total_seconds()
 
     def get_active_duration(self) -> float:
@@ -140,10 +170,11 @@ class StudySession:
         """Calculate the pause duration for a specific pause-resume pair of the study-session."""
         if self.state == "INACTIVE":
             raise StudySessionError("attempting to calculate the pause duration of an inactive study-session!")
+
         pause, resume = self._pause_resume_times[idx]
         if resume is None:
             if self.state == "PAUSED":
-                resume = datetime.datetime.now()
+                resume = datetime.datetime.now(self.timezone)
             elif self.state == "STOPPED":
                 resume = self.stop_time
         return (resume-pause).total_seconds()
@@ -153,6 +184,7 @@ class StudySession:
         if self.state == "INACTIVE":
             raise StudySessionError("attempting to calculate the cumulative pause duration "
                                     "of an inactive study-session!")
+
         if self.state == "PAUSED":
             cumulative_pause_duration = self._cached_cumulative_pause_duration + self.get_pause_duration(-1)
         else:   # RUNNING or STOPPED
