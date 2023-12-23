@@ -16,11 +16,14 @@ class _StudySession(ParentStudySession):
 
     @ParentStudySession.subject_name.setter
     def subject_name(self, name: str) -> None:
+        """Return the subject_name."""
         if not isinstance(name, str):
-            raise TypeError(f"excepted Type: 'str' for subject_name, but got {type(name).__name__!r} instead!")
+            raise TypeError(f"excepted type: 'str', got {type(name).__name__!r} instead!")
+
         if "," in name:    # the comma is forbidden here
             raise ValueError("found comma in the subject_name, "
                              "note: the comma is forbidden here because of csv logging functionality!")
+
         self._subject_name = name
 
     def __repr__(self):
@@ -34,6 +37,7 @@ class _StudySession(ParentStudySession):
         # Check study-session state before saving
         if self.state != "STOPPED":
             raise StudySessionError("this study-session must be stopped before saving data to the database!")
+
         if db_handler.is_record_present(self.subject_name):  # Record already exists, update the record
             db_handler.increment_record_total_time(self.subject_name, self.get_active_duration())
         else:   # Record doesn't already exist, create a new record
@@ -50,6 +54,7 @@ class _StudySession(ParentStudySession):
         # Check study-session state before saving
         if self.state != "STOPPED":
             raise StudySessionError("this study-session must be stopped before saving data to the csv file!")
+
         # Check and create the csv folder path if it doesn't exist
         if not os.path.exists(csv_folder_path):
             os.makedirs(csv_folder_path)
@@ -58,7 +63,7 @@ class _StudySession(ParentStudySession):
         # Create a new csv file and write header if csv file is missing or is empty
         if not os.path.exists(csv_path) or os.path.getsize(csv_path) == 0:
             with open(csv_path, "w") as file:
-                file.write("subject name,start time,stop time,duration,cumulative pause duration,"
+                file.write("subject name,start time,stop time,timezone,duration,cumulative pause duration,"
                            "active duration\n")
         # Writing Data to csv
         with open(csv_path, "a") as file:
@@ -69,6 +74,7 @@ class _StudySession(ParentStudySession):
             file.write(f"{self.subject_name},"
                        f"{self.start_time.strftime('%A %I:%M:%S %p')},"
                        f"{self.stop_time.strftime('%A %I:%M:%S %p')},"
+                       f"{self.timezone.zone},"
                        f"{fmt_study_session_duration},"
                        f"{fmt_study_session_cumulative_pause_duration},"
                        f"{fmt_study_session_active_duration}\n")
