@@ -204,3 +204,9 @@ class StudySession:
 
 class StudySessionError(Exception):
     """Custom exception for StudySession related errors."""
+
+
+class StudySessionNotFoundError(Exception):
+    """Raised when the requested study-session is not found in the database."""
+    def __init__(self, subject_name: str):
+        Exception.__init__(self, f"study-session with subject name: {subject_name!r} not found in the database!")
