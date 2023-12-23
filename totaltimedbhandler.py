@@ -18,11 +18,11 @@ class TotalTimeDBHandler:
         """Initialize the database handler with the provided folder path and file name."""
         # Validation for db_folder_path and db_file_name
         if not isinstance(db_folder_path, str):
-            raise TypeError(f"excepted Type: 'str' for db_folder_path"
-                            f", but got {type(db_folder_path).__name__!r} instead!")
+            raise TypeError(f"excepted type: 'str', got {type(db_folder_path).__name__!r} instead!")
+
         if not isinstance(db_file_name, str):
-            raise TypeError(f"excepted Type: 'str' for db_file_name"
-                            f", but got {type(db_file_name).__name__!r} instead!")
+            raise TypeError(f"excepted type: 'str', got {type(db_file_name).__name__!r} instead!")
+
         self._db_folder_path = db_folder_path
         self._db_file_name = db_file_name
         self._conn = None
@@ -67,6 +67,7 @@ class TotalTimeDBHandler:
         if not isinstance(flag, bool):
             raise TypeError(f"expected Type: 'bool' for auto_explicit_commit_flag"
                             f", but got {type(flag).__name__!r} instead!")
+
         self._auto_explicit_commit_flag = flag
 
     # Instance Methods (Public):
