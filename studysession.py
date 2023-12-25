@@ -151,21 +151,6 @@ class StudySession:
 
     # Calculation methods
 
-    def get_duration(self) -> float:
-        """Retrieve the duration of the study-session."""
-        if self.state == "INACTIVE":
-            raise StudySessionError("attempting to calculate the duration of an inactive study-session!")
-
-        if self.state == "STOPPED":
-            duration = self.stop_time - self.start_time
-        else:   # RUNNING or PAUSED
-            duration = datetime.datetime.now(self.timezone) - self.start_time
-        return duration.total_seconds()
-
-    def get_active_duration(self) -> float:
-        """Retrieve the active duration of the study-session(excluding the cumulative pause duration)."""
-        return self.get_duration() - self.get_cumulative_pause_duration()
-
     def get_pause_duration(self, idx: int) -> float:
         """Calculate the pause duration for a specific pause-resume pair of the study-session."""
         if self.state == "INACTIVE":
@@ -190,6 +175,21 @@ class StudySession:
         else:   # RUNNING or STOPPED
             cumulative_pause_duration = self._cached_cumulative_pause_duration
         return cumulative_pause_duration
+
+    def get_duration(self) -> float:
+        """Retrieve the duration of the study-session."""
+        if self.state == "INACTIVE":
+            raise StudySessionError("attempting to calculate the duration of an inactive study-session!")
+
+        if self.state == "STOPPED":
+            duration = self.stop_time - self.start_time
+        else:   # RUNNING or PAUSED
+            duration = datetime.datetime.now(self.timezone) - self.start_time
+        return duration.total_seconds()
+
+    def get_active_duration(self) -> float:
+        """Retrieve the active duration of the study-session(excluding the cumulative pause duration)."""
+        return self.get_duration() - self.get_cumulative_pause_duration()
 
     # Static Methods (Public):
 
