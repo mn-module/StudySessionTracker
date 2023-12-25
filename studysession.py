@@ -139,7 +139,7 @@ class StudySession:
         self._state = "INACTIVE"
 
     def reset_tracking(self) -> None:
-        """Reset tracking the study-session data to its initial state, excluding the 'total_time'."""
+        """Reset tracking the study-session data to its initial state."""
         if self.state != "STOPPED":
             raise StudySessionError("cannot reset a study-session that hasn't been stopped!")
 
